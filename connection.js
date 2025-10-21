@@ -1,12 +1,30 @@
-const sqlite3 = require('sqlite3').verbose();
+// connection.js
+const mysql = require("mysql2/promise");
 
-const db = new sqlite3.Database('./clubs.db', (err) => {
-  if (err) {
-    console.error('Error connecting to database:', err.message);
-  } else {
-    console.log('Connected to the clubs.db database.');
-  }
+// Create MySQL connection pool (more efficient than single connection)
+const pool = mysql.createPool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
+// For testing connection
+(async () => {
+  try {
+    const connection = await pool.getConnection();
+    console.log('Connected to MySQL database');
+    connection.release();
+  } catch (error) {
+    console.error('Error connecting to MySQL:', error.message);
+  }
+})();
 
-module.exports = db;
+// Export the connection object and query function
+module.exports = {
+  connection: pool,
+  query: (...args) => pool.query(...args)
+};

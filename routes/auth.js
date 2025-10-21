@@ -9,35 +9,29 @@ router.get('/register', (req, res) => {
 });
 
 // POST /register - Handle registration
-router.post('/register', (req, res) => {
-  const { name, email, password } = req.body;
+router.post('/register', async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
 
-  // Hash password
-  const hashedPassword = bcrypt.hashSync(password, 10);
+    // Hash password
+    const hashedPassword = bcrypt.hashSync(password, 10);
 
-  // Insert new user
-  db.run(
-    'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
-    [name, email, hashedPassword, 'student'],
-    function(err) {
-      if (err) {
-        console.error('Error creating user:', err.message);
-        return res.redirect('/register');
-      }
+    // Insert new user
+    const result = await db.run(
+      'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
+      [name, email, hashedPassword, 'student']
+    );
 
-      // Get the newly created user
-      db.get('SELECT * FROM users WHERE user_id = ?', [this.lastID], (err, user) => {
-        if (err) {
-          console.error('Error fetching user:', err.message);
-          return res.redirect('/login');
-        }
+    // Get the newly created user
+    const user = await db.get('SELECT * FROM users WHERE user_id = ?', [result.insertId]);
 
-        // Save user to session
-        req.session.user = user;
-        res.redirect('/clubs');
-      });
-    }
-  );
+    // Save user to session
+    req.session.user = user;
+    res.redirect('/clubs');
+  } catch (err) {
+    console.error('Error in registration:', err.message);
+    return res.redirect('/register');
+  }
 });
 
 // GET /login - Show login form
@@ -46,15 +40,12 @@ router.get('/login', (req, res) => {
 });
 
 // POST /login - Handle login
-router.post('/login', (req, res) => {
-  const { email, password } = req.body;
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-  // Find user by email
-  db.get('SELECT * FROM users WHERE email = ?', [email], (err, user) => {
-    if (err) {
-      console.error('Error finding user:', err.message);
-      return res.redirect('/login');
-    }
+    // Find user by email
+    const user = await db.get('SELECT * FROM users WHERE email = ?', [email]);
 
     if (!user) {
       return res.redirect('/login');
@@ -69,7 +60,10 @@ router.post('/login', (req, res) => {
     // Save user to session
     req.session.user = user;
     res.redirect('/clubs');
-  });
+  } catch (err) {
+    console.error('Error in login:', err.message);
+    return res.redirect('/login');
+  }
 });
 
 // POST /logout - Handle logout
