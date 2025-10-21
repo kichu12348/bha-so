@@ -1,0 +1,98 @@
+<%- include('../partials/header') %>
+
+<div class="max-w-6xl mx-auto">
+  <!-- Club Header -->
+  <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+    <div class="flex justify-between items-start">
+      <div>
+        <h1 class="text-4xl font-bold text-gray-800 mb-2"><%= club.name %></h1>
+        <p class="text-gray-600 text-lg"><%= club.description || 'No description available' %></p>
+      </div>
+      
+      <!-- Membership Button -->
+      <div>
+        <% if (!userMembership) { %>
+          <form action="/clubs/<%= club.club_id %>/join" method="POST">
+            <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded">
+              Join Club
+            </button>
+          </form>
+        <% } else { %>
+          <form action="/clubs/<%= club.club_id %>/leave?_method=DELETE" method="POST">
+            <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-3 px-6 rounded" onclick="return confirm('Are you sure you want to leave this club?')">
+              Leave Club
+            </button>
+          </form>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Events Section -->
+    <div class="bg-white shadow-md rounded-lg p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold text-gray-800">Upcoming Events</h2>
+        
+        <% if (userMembership && userMembership.role === 'coordinator') { %>
+          <a href="/clubs/<%= club.club_id %>/events/new" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
+            + Add Event
+          </a>
+        <% } %>
+      </div>
+      
+      <% if (events.length === 0) { %>
+        <p class="text-gray-600">No upcoming events.</p>
+      <% } else { %>
+        <div class="space-y-4">
+          <% events.forEach(event => { %>
+            <div class="border-l-4 border-blue-500 pl-4 py-2">
+              <h3 class="font-bold text-lg text-gray-800"><%= event.title %></h3>
+              <p class="text-gray-600 text-sm"><%= event.description %></p>
+              <p class="text-gray-500 text-xs mt-1">
+                📅 <%= new Date(event.event_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %>
+              </p>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Members Section -->
+    <div class="bg-white shadow-md rounded-lg p-6">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">Members (<%= members.length %>)</h2>
+      
+      <% if (members.length === 0) { %>
+        <p class="text-gray-600">No members yet.</p>
+      <% } else { %>
+        <div class="space-y-3">
+          <% members.forEach(member => { %>
+            <div class="flex justify-between items-center border-b pb-2">
+              <div>
+                <p class="font-semibold text-gray-800"><%= member.name %></p>
+                <p class="text-gray-600 text-sm"><%= member.email %></p>
+              </div>
+              <% if (member.role === 'coordinator') { %>
+                <span class="bg-purple-500 text-white text-xs font-bold py-1 px-3 rounded">
+                  Coordinator
+                </span>
+              <% } else { %>
+                <span class="bg-gray-400 text-white text-xs font-bold py-1 px-3 rounded">
+                  Member
+                </span>
+              <% } %>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="mt-6">
+    <a href="/clubs" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+      ← Back to All Clubs
+    </a>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
