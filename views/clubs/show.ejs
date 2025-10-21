@@ -4,25 +4,35 @@
   <!-- Club Header -->
   <div class="bg-white shadow-md rounded-lg p-6 mb-6">
     <div class="flex justify-between items-start">
-      <div>
+      <div class="flex-1">
         <h1 class="text-4xl font-bold text-gray-800 mb-2"><%= club.name %></h1>
         <p class="text-gray-600 text-lg"><%= club.description || 'No description available' %></p>
       </div>
       
-      <!-- Membership Button -->
-      <div>
-        <% if (!userMembership) { %>
-          <form action="/clubs/<%= club.club_id %>/join" method="POST">
-            <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded">
-              Join Club
-            </button>
-          </form>
-        <% } else { %>
-          <form action="/clubs/<%= club.club_id %>/leave?_method=DELETE" method="POST">
-            <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-3 px-6 rounded" onclick="return confirm('Are you sure you want to leave this club?')">
-              Leave Club
-            </button>
-          </form>
+      <!-- Action Buttons -->
+      <div class="flex gap-2">
+        <!-- Admin Edit Button -->
+        <% if (user && user.role === 'admin') { %>
+          <a href="/clubs/<%= club.club_id %>/edit" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-3 px-6 rounded">
+            Edit Club
+          </a>
+        <% } %>
+        
+        <!-- Membership Button (Not for Admin) -->
+        <% if (user.role !== 'admin') { %>
+          <% if (!userMembership) { %>
+            <form action="/clubs/<%= club.club_id %>/join" method="POST">
+              <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded">
+                Join Club
+              </button>
+            </form>
+          <% } else { %>
+            <form action="/clubs/<%= club.club_id %>/leave?_method=DELETE" method="POST">
+              <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-3 px-6 rounded" onclick="return confirm('Are you sure you want to leave this club?')">
+                Leave Club
+              </button>
+            </form>
+          <% } %>
         <% } %>
       </div>
     </div>

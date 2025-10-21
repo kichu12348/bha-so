@@ -1,14 +1,6 @@
-const sqlite3 = require('sqlite3').verbose();
+const db = require('./connection');
 const bcrypt = require('bcryptjs');
 
-// Connect to SQLite database
-const db = new sqlite3.Database('./clubs.db', (err) => {
-  if (err) {
-    console.error('Error connecting to database:', err.message);
-  } else {
-    console.log('Connected to the clubs.db database.');
-  }
-});
 
 // Create tables and seed data
 db.serialize(() => {

@@ -1,0 +1,47 @@
+<%- include('../partials/header') %>
+
+<div class="max-w-2xl mx-auto mt-10">
+  <div class="bg-white shadow-md rounded-lg p-8">
+    <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Edit Club</h1>
+    
+    <form action="/clubs/<%= club.club_id %>?_method=PUT" method="POST" class="space-y-4">
+      <div class="mb-4">
+        <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Club Name</label>
+        <input 
+          type="text" 
+          id="name" 
+          name="name" 
+          value="<%= club.name %>"
+          required
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          placeholder="Enter club name"
+        >
+      </div>
+      
+      <div class="mb-6">
+        <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Description</label>
+        <textarea 
+          id="description" 
+          name="description" 
+          rows="4"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          placeholder="Enter club description"
+        ><%= club.description || '' %></textarea>
+      </div>
+      
+      <div class="flex justify-between">
+        <a href="/clubs/<%= club.club_id %>" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+          Cancel
+        </a>
+        <button 
+          type="submit" 
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Update Club
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

@@ -4,9 +4,6 @@ const methodOverride = require('method-override');
 const session = require('express-session');
 const path = require('path');
 
-// Import database (this will create tables and seed data)
-const db = require('./database');
-
 // Import routes
 const authRoutes = require('./routes/auth');
 const clubRoutes = require('./routes/clubs');
@@ -33,7 +30,7 @@ app.use(session({
   }
 }));
 
-// Global middleware to make user available in all views
+
 app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
   next();
